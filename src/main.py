@@ -1,6 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as stc
 import time
+from pathlib import Path
 
 # File Processing Pkgs
 import pandas as pd
@@ -11,6 +12,16 @@ from PIL import Image
 
 def main():
     st.title("Phần mềm nhận dạng các loại nho")
+    col1, col2 = st.columns([3, 1], gap="medium")
+    with col2:
+        st.image(image = Image.open('logo.png'), width=140)
+    with col1:
+        st.write(
+            """
+        Thành viên:
+        - Phan Đại Đăng Khoa
+        - Nguyễn Trường Phúc
+        """)
     file = st.file_uploader("Upload file",type=["png","jpg"])
     show_file = st.empty()
 
