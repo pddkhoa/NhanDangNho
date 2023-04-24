@@ -20,17 +20,38 @@ def processed_img(img_path):
     img = img / 255
     img = np.expand_dims(img, [0])
     answer = model.predict(img)
+    answer2 = answer[0]
     y_class = answer.argmax(axis=-1)
+    array = np.asarray(answer2)
+    idx = (np.abs(array-1)).argmin()
+    acc = array[idx]
     print(y_class)
     y = " ".join(str(x) for x in y_class)
     y = int(y)
     res = labels[y]
     print(res)
+    print(acc)
     return res.capitalize()
 
 
 def run():
-    st.title("Fruits🍍-Vegetable🍅 Classification")
+    st.set_page_config(
+    page_title="Nhận Dạng Các Loại Nho",
+    page_icon=":grapes:",
+    layout="wide",)
+    c1,c2 = st.columns([1,8])
+    with c2:
+        image = Image.open('logo2.png')    
+        st.image(image,width=1000)
+
+    col1,col2 = st.columns([1, 3])
+    with col2:
+         st.title("NHẬN DẠNG CÁC LOẠI NHO :grapes:")
+    st.text("""
+    - Phan Đại Đăng Khoa
+    - Nguyễn Trường Phúc
+    """)
+    
     img_file = st.file_uploader("Choose an Image", type=["jpg", "png"])
     if img_file is not None:
         img = Image.open(img_file).resize((250, 250))
