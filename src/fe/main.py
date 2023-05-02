@@ -1,14 +1,18 @@
+import cv2
+from io import BytesIO
 import streamlit as st
 from PIL import Image
+from rembg import remove
 from tensorflow.keras.utils import load_img, img_to_array
 import numpy as np
+import matplotlib.pyplot as plt
 from keras.models import load_model
 import requests
 from bs4 import BeautifulSoup
+import time
 
 model = load_model('models.h5')
-labels = {0: 'champagne', 1: 'cotton candy', 2: 'crimson seedless', 3: 'gewurztraminer', 4: 'glenora', 5: 'kyoho'
-          }
+labels = {0: 'champagne', 1: 'cotton candy', 2: 'crimson seedless', 3: 'gewurztraminer', 4: 'glenora', 5: 'kyoho'}
 
 
 
@@ -34,39 +38,65 @@ def processed_img(img_path):
     return res.capitalize()
 
 
-def run():
-    st.set_page_config(
+
+st.set_page_config(
     page_title="Nhận Dạng Các Loại Nho",
     page_icon=":grapes:",
     layout="wide",)
-    c1,c2 = st.columns([1,8])
-    with c2:
-        image = Image.open('logo2.png')    
-        st.image(image,width=1000)
 
-    col1,col2 = st.columns([1, 3])
-    with col2:
-         st.title("NHẬN DẠNG CÁC LOẠI NHO :grapes:")
-    st.text("""
+
+image = Image.open('logo2.png')    
+st.image(image,width=900)
+
+st.title("NHẬN DẠNG CÁC LOẠI NHO :grapes::grapes::grapes:")
+
+
+st.sidebar.write("""
+    # Nhóm 6:
     - Phan Đại Đăng Khoa
     - Nguyễn Trường Phúc
     """)
-    
-    img_file = st.file_uploader("Choose an Image", type=["jpg", "png"])
-    if img_file is not None:
-        img = Image.open(img_file).resize((250, 250))
-        st.image(img, use_column_width=False)
-        save_image_path = './upload_images/' + img_file.name
+st.sidebar.write("## Choose an Image :gear:")
+
+# Create the columns
+col1, col2 = st.columns(2)
+
+# Download the fixed image
+def convert_image(img):
+    buf = BytesIO()
+    img.save(buf, format="PNG")
+    byte_im = buf.getvalue()
+    return byte_im
+
+# Package the transform into a function
+def fix_image(upload):
+    image = Image.open(upload)
+    col1.write("Original Image :camera:")
+    col1.image(image)
+
+    fixed = remove(image)
+    col2.write("Fixed Image :wrench:")
+    col2.image(fixed)
+    st.sidebar.download_button(
+        "Download fixed image", convert_image(fixed), "fixed.png", "image/png"
+    )
+
+# Create the file uploader
+my_upload = st.sidebar.file_uploader("Upload an image", type=["png", "jpg", "jpeg"])
+if my_upload is not None:
+        img_out = fix_image(my_upload)
+        save_image_path = './upload_images/' + my_upload.name
         with open(save_image_path, "wb") as f:
-            f.write(img_file.getbuffer())
+            f.write(my_upload.getbuffer())
 
-        # if st.button("Predict"):
-        if img_file is not None:
-            result = processed_img(save_image_path)
-            print(result)
-            st.success("**Predicted : " + result + '**')
-            
-        
-
-
-run()
+# Fix the image!
+if my_upload is not None:
+    result = processed_img(save_image_path)
+    print(result)
+    progress_text = "Operation in progress. Please wait."
+    my_bar = st.progress(0, text=progress_text)
+    for percent_complete in range(100):
+        time.sleep(0.01)
+        my_bar.progress(percent_complete + 1, text=progress_text)
+      
+    st.success("**Predicted : " + result + '**')
