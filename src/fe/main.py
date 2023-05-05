@@ -14,8 +14,14 @@ import time
 model = load_model('models.h5')
 labels = {0: 'champagne', 1: 'cotton candy', 2: 'crimson seedless', 3: 'gewurztraminer', 4: 'glenora', 5: 'kyoho'}
 
+def getInfor(prediction):
+     # Đường dẫn tới file text
+    file_path =  prediction+".txt"
 
-
+    # Mở file và đọc nội dung của nó
+    with open(file_path, "r",encoding="utf-8") as f:
+        content = f.read()
+    return content
 
 
 def processed_img(img_path):
@@ -100,3 +106,4 @@ if my_upload is not None:
         my_bar.progress(percent_complete + 1, text=progress_text)
       
     st.success("**Predicted : " + result + '**')
+    st.warning(getInfor(result))
