@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 import time
 
 model = load_model('models.h5')
-labels = {0: 'champagne', 1: 'cotton candy', 2: 'crimson seedless', 3: 'gewurztraminer', 4: 'glenora', 5: 'kyoho'}
+labels = {0: 'champagne',1:'concord' ,2: 'cotton candy', 3: 'crimson seedless', 4: 'gewurztraminer', 5: 'glenora', 6: 'kyoho'}
 
 def getInfor(prediction):
      # Đường dẫn tới file text
